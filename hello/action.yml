@@ -1,0 +1,8 @@
+name: Hello
+description: "Prints pnstack"
+author: "pnstack"
+runs:
+  using: "composite"
+  steps:
+    - run: echo "pnstack.com"
+      shell: bash

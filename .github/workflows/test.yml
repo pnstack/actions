@@ -1,0 +1,17 @@
+on:
+  push:
+    branches:
+      - main
+
+name: Test
+
+jobs:
+  hello:
+    name: Hello
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+
+      - name: Hello
+        uses: pnstack/actions/hello@master
