@@ -9,9 +9,12 @@ inputs:
 outputs:
   dir:
     description: "List of directories"    
+    value: ${{ steps.list-dir.outputs.random-number }}
 
 runs:
   using: "composite"
   steps:
-    - shell: bash
-      run: echo "dir=$(ls -d ${{ inputs.dir }} | jq -R -s -c 'split("\n")[:-1]')" >> $GITHUB_OUTPUT
+    - id: "list-dir"
+      shell: bash
+      # run: echo "dir=$(ls -d ${{ inputs.dir }} | jq -R -s -c 'split("\n")[:-1]')" >> $GITHUB_OUTPUT
+      run: echo "dir=hello" >> $GITHUB_OUTPUT
