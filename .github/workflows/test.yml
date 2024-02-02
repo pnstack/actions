@@ -34,6 +34,7 @@ jobs:
         uses: actions/checkout@v3
 
       - name: List Dir
+        id: list-dir
         uses: pnstack/actions/list-dir@main
         
       - name: Print Dir
