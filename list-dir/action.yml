@@ -9,7 +9,7 @@ inputs:
 outputs:
   dir:
     description: "List of directories"    
-    value: "example output"
+    value: ${{ steps.list-dir.outputs.dir }}
 
 runs:
   using: "composite"
