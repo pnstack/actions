@@ -9,7 +9,7 @@ inputs:
 outputs:
   dir:
     description: "List of directories"    
-    value: ${{ steps.list-dir.outputs.random-number }}
+    value: "example output"
 
 runs:
   using: "composite"
