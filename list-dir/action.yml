@@ -1,0 +1,17 @@
+name: List Dir
+description: "List the directory"
+author: "pnstack"
+inputs:
+  dir:
+    description: "Directory to list"
+    default: "*/"
+    
+outputs:
+  dir:
+    description: "List of directories"    
+
+runs:
+  using: "composite"
+  steps:
+    - id: set-dirs 
+      run: echo "::set-output name=dir::$(ls -d ${{ inputs.dir }} | jq -R -s -c 'split("\n")[:-1]')"

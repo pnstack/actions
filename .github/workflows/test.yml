@@ -26,3 +26,14 @@ jobs:
         uses: pnstack/actions/docker@main
         with:
           who-to-greet: 'Mona the Octocat'
+  list-dir:
+    name: List Dir
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+
+      - name: List Dir
+        uses: pnstack/actions/list-dir@main
+        with:
+          dir: 'templates/'
