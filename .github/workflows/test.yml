@@ -35,5 +35,3 @@ jobs:
 
       - name: List Dir
         uses: pnstack/actions/list-dir@main
-        with:
-          dir: 'templates/'
