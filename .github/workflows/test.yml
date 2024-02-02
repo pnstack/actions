@@ -35,3 +35,6 @@ jobs:
 
       - name: List Dir
         uses: pnstack/actions/list-dir@main
+        
+      - name: Print Dir
+        run: echo ${{ steps.list-dir.outputs.dir }}
