@@ -11,9 +11,22 @@ outputs:
     description: "List of directories"    
     value: ${{ steps.list-dir.outputs.dir }}
 
+# runs:
+#   using: "composite"
+#   steps:
+#     - id: "list-dir"
+#       shell: bash
+#       run: echo "dir=$(ls -d ${{ inputs.dir }} | jq -R -s -c 'split("\n")[:-1]')" >> $GITHUB_OUTPUT
+
 runs:
   using: "composite"
   steps:
     - id: "list-dir"
-      shell: bash
-      run: echo "dir=$(ls -d ${{ inputs.dir }} | jq -R -s -c 'split("\n")[:-1]')" >> $GITHUB_OUTPUT
+      shell: python
+      run: |
+        import os
+        import json
+
+        dir = "${{ inputs.dir }}"
+        dirs = [name for name in os.listdir(dir) if os.path.isdir(os.path.join(dir, name))]
+        print(f"::set-output name=dir::{json.dumps(dirs)}")
