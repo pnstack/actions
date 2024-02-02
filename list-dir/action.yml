@@ -4,7 +4,7 @@ author: "pnstack"
 inputs:
   dir:
     description: "Directory to list"
-    default: "*/"
+    default: ""
 
 outputs:
   dir:
