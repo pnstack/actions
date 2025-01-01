@@ -1,0 +1,110 @@
+# .github/workflows/docker-build-reusable.yml
+name: Docker Build Reusable Workflow
+
+on:
+  workflow_call:
+    inputs:
+      platforms:
+        required: false
+        type: string
+        default: "linux/amd64,linux/arm64"
+      dockerfile:
+        required: false
+        type: string
+        default: "Dockerfile"
+      context:
+        required: false
+        type: string
+        default: "."
+      push_enabled:
+        required: false
+        type: boolean
+        default: true
+      registry:
+        required: false
+        type: string
+        default: "ghcr.io"
+    secrets:
+      registry_username:
+        required: false
+        description: 'Registry username (defaults to github.actor)'
+      registry_password:
+        required: false
+        description: 'Registry password (defaults to GITHUB_TOKEN)'
+
+jobs:
+  lint:
+    name: Lint Dockerfile
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Lint Dockerfile
+        uses: hadolint/hadolint-action@v3.1.0
+        with:
+          dockerfile: ${{ inputs.dockerfile }}
+
+  build-and-push:
+    name: Build and Push Docker image
+    needs: lint
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      packages: write
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Extract short SHA
+        id: vars
+        run: echo "sha_short=$(git rev-parse --short=7 ${{ github.sha }})" >> $GITHUB_OUTPUT
+
+      - name: Set up QEMU
+        uses: docker/setup-qemu-action@v3
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Login to Registry
+        if: ${{ inputs.push_enabled }}
+        uses: docker/login-action@v3
+        with:
+          registry: ${{ inputs.registry }}
+          username: ${{ secrets.registry_username || github.actor }}
+          password: ${{ secrets.registry_password || github.token }}
+
+      - name: Extract metadata for Docker
+        id: meta
+        uses: docker/metadata-action@v5
+        with:
+          images: ${{ inputs.registry }}/${{ github.repository }}
+          tags: |
+            type=raw,value=sha-${{ steps.vars.outputs.sha_short }}
+            type=ref,event=branch
+            type=ref,event=pr
+            type=semver,pattern={{version}}
+            type=semver,pattern={{major}}.{{minor}}
+            type=raw,value=latest,enable={{is_default_branch}}
+            type=raw,value=dev,enable=${{ github.ref == 'refs/heads/develop' }}
+
+      - name: Build and push Docker image
+        uses: docker/build-push-action@v5
+        with:
+          context: ${{ inputs.context }}
+          file: ${{ inputs.dockerfile }}
+          platforms: ${{ inputs.platforms }}
+          push: ${{ inputs.push_enabled && github.event_name != 'pull_request' }}
+          tags: ${{ steps.meta.outputs.tags }}
+          labels: ${{ steps.meta.outputs.labels }}
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
+
+      - name: Print image details
+        if: ${{ inputs.push_enabled && github.event_name != 'pull_request' }}
+        run: |
+          echo "Published tags:"
+          echo "${{ steps.meta.outputs.tags }}" | tr ' ' '\n'
+          echo -e "\nPlatforms:"
+          echo "${{ inputs.platforms }}" | tr ',' '\n' | sed 's/^/- /'
