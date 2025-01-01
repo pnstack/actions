@@ -1,4 +1,3 @@
-# .github/workflows/docker-build-reusable.yml
 name: Docker Build Reusable Workflow
 
 on:
