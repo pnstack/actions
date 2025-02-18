@@ -54,8 +54,7 @@ jobs:
         uses: pnstack/actions/docker-publish@main
         id: build
         with:
-          dockerfile: "Dockerfile"
-          context: "."
+          context: ./docker-publish/tests
           push_enabled: true
           registry: "ghcr.io"
           registry_username: "pnstack"
