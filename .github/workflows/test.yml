@@ -59,3 +59,6 @@ jobs:
           registry: "ghcr.io"
           registry_username: "pnstack"
           registry_password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Print docker image name
+        run: echo "${{ steps.meta.outputs.images }}"
