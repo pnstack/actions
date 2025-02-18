@@ -3,52 +3,45 @@ description: A composite action to build and push Docker images with multi-platf
 
 inputs:
   platforms:
-    description: 'Platforms to build for (e.g. linux/amd64,linux/arm64)'
+    description: "Platforms to build for (e.g. linux/amd64,linux/arm64)"
     required: false
     default: "linux/amd64,linux/arm64"
   dockerfile:
-    description: 'Path to the Dockerfile'
+    description: "Path to the Dockerfile"
     required: false
     default: "Dockerfile"
   context:
-    description: 'Build context'
+    description: "Build context"
     required: false
     default: "."
   push_enabled:
-    description: 'Whether to push the image to registry'
+    description: "Whether to push the image to registry"
     required: false
-    default: 'true'
+    default: "true"
   registry:
-    description: 'Container registry to push to'
+    description: "Container registry to push to"
     required: false
     default: "ghcr.io"
   registry_username:
-    description: 'Registry username'
+    description: "Registry username"
     required: false
   registry_password:
-    description: 'Registry password'
+    description: "Registry password"
     required: false
-  skip_lint:
-    description: 'Skip Dockerfile linting'
-    required: false
-    default: 'false'
 
 outputs:
   image_name:
-    description: 'The full name of the Docker image'
+    description: "The full name of the Docker image"
     value: ${{ steps.outputs.outputs.image_name }}
   tags:
-    description: 'The tags applied to the Docker image'
+    description: "The tags applied to the Docker image"
     value: ${{ steps.outputs.outputs.tags }}
 
 runs:
   using: "composite"
   steps:
-    - name: Lint Dockerfile
-      if: inputs.skip_lint != 'true'
-      uses: hadolint/hadolint-action@v3.1.0
-      with:
-        dockerfile: ${{ inputs.dockerfile }}
+    - name: Checkout
+      uses: actions/checkout@v3
 
     - name: Extract short SHA
       shell: bash
