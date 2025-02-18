@@ -52,6 +52,7 @@ jobs:
 
       - name: Docker Publish
         uses: pnstack/actions/docker-publish@main
+        id: build
         with:
           dockerfile: "Dockerfile"
           context: "."
@@ -61,4 +62,4 @@ jobs:
           registry_password: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Print docker image name
-        run: echo "${{ steps.meta.outputs.images }}"
+        run: echo "${{ steps.build.outputs.image_name }}" "${{ steps.build.outputs.tags }}"

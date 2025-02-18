@@ -33,6 +33,14 @@ inputs:
     required: false
     default: 'false'
 
+outputs:
+  image_name:
+    description: 'The full name of the Docker image'
+    value: ${{ steps.outputs.outputs.image_name }}
+  tags:
+    description: 'The tags applied to the Docker image'
+    value: ${{ steps.outputs.outputs.tags }}
+
 runs:
   using: "composite"
   steps:
@@ -86,6 +94,13 @@ runs:
         labels: ${{ steps.meta.outputs.labels }}
         cache-from: type=gha
         cache-to: type=gha,mode=max
+
+    - name: Set outputs
+      shell: bash
+      run: |
+        echo "image_name=${{ inputs.registry }}/${{ github.repository }}" >> "$GITHUB_OUTPUT"
+        echo "tags=${{ steps.meta.outputs.tags }}" >> "$GITHUB_OUTPUT"
+      id: outputs
 
     - name: Print image details
       if: ${{ inputs.push_enabled == 'true' && github.event_name != 'pull_request' }}
